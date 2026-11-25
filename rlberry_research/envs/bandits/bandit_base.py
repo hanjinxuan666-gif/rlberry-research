@@ -57,7 +57,7 @@ class Bandit(Model):
         Sample the reward associated to the action.
         """
         # test that the action exists
-        assert action < self.n_arms
+        assert self.action_space.contains(action), "Invalid action!"
 
         reward = self.laws[action].rvs(random_state=self.rng, size=1)[0]
         terminated = True
@@ -100,7 +100,7 @@ class AdversarialBandit(Model):
         Sample the reward associated to the action.
         """
         # test that the action exists
-        assert action < self.n_arms
+        assert self.action_space.contains(action), "Invalid action!"
 
         rewards = self.rewards.popleft()
         reward = rewards[action]

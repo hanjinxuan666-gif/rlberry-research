@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from rlberry.seeding import safe_reseed
 from rlberry.seeding import Seeder
 from rlberry_research.envs.bandits import (
@@ -10,6 +11,17 @@ from rlberry_research.envs.bandits import (
 
 
 TEST_SEED = 42
+
+
+def test_invalid_arm_does_not_consume_reward():
+    stochastic = BernoulliBandit(p=[0.0, 1.0])
+    adversarial = AdversarialBandit(rewards=np.array([[1, 2], [3, 4]]))
+    for env in (stochastic, adversarial):
+        for action in (-1, env.n_arms):
+            with pytest.raises(AssertionError):
+                env.step(action)
+    assert adversarial.step(0)[1] == 1
+    assert stochastic.step(1)[1] == 1
 
 
 def test_bernoulli():
